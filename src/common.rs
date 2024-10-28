@@ -1,4 +1,5 @@
-use std::{collections::BTreeMap, fmt};
+use std::{fmt, hash::Hash};
+use indexmap::IndexMap;
 
 use combine::easy::{Error, Info};
 use combine::{choice, many, many1, optional, position, StdParseResult};
@@ -20,7 +21,8 @@ pub trait Text<'a>: 'a {
         + PartialOrd
         + Ord
         + fmt::Debug
-        + Clone;
+        + Clone
+        + Hash;
 }
 
 impl<'a> Text<'a> for &'a str {
@@ -63,7 +65,7 @@ pub enum Value<'a, T: Text<'a>> {
     Null,
     Enum(T::Value),
     List(Vec<Value<'a, T>>),
-    Object(BTreeMap<T::Value, Value<'a, T>>),
+    Object(IndexMap<T::Value, Value<'a, T>>),
 }
 
 impl<'a, T: Text<'a>> Value<'a, T> {
